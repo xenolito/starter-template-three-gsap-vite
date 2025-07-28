@@ -46,36 +46,29 @@ renderer.setSize(sizes.width, sizes.height)
 const clock = new THREE.Clock()
 
 // Animation setup
-gsap.to(cube.position, {
-  duration: 1,
-  delay: 1,
-  x: 2,
-  ease: 'power1.inOut',
-  // yoyo: true,
-  // repeat: -1,
-  onComplete: () => {
-    console.log('Animation complete')
-  }
-})
+// gsap.to(cube.position, {
+//   duration: 1,
+//   delay: 1,
+//   x: 2,
+//   ease: 'power1.inOut',
+//   yoyo: true,
+//   repeat: -1,
+//   onComplete: () => {
+//     console.log('Animation complete')
+//   }
+// })
 
 // Animations
 const tick = () => {
   //Clock
-  // const elapsedTime = clock.getElapsedTime()
-
-  // Time
-  // const currentTime = Date.now()
-  // const deltaTime = currentTime - time;
-  // time = currentTime;
-
-  // console.log(deltaTime)
+  const elapsedTime = clock.getElapsedTime()
 
   // update scene
 
-  // cube.rotation.y = elapsedTime * (Math.PI * 2) // one revolution per second
+  cube.rotation.y = elapsedTime * (Math.PI * 2) // one revolution per second
 
-  // cube.position.y = Math.sin(elapsedTime * 1.5) // oscillate up and down
-  // cube.position.x = Math.cos(elapsedTime * 1.5) // oscillate up and down
+  cube.position.y = Math.sin(elapsedTime * 1.5) // oscillate up and down
+  cube.position.x = Math.cos(elapsedTime * 1.5) // oscillate up and down
 
   //Render
   renderer.render(scene, camera)
