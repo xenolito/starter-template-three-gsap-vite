@@ -1,0 +1,23 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* reset */
+html,body {
+  margin: 0 !important;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: clip;
+}
+
+/* #app {
+  .webgl {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+} */

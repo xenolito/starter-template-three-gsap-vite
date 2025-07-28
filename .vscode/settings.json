@@ -1,0 +1,13 @@
+{
+  // Desactiva Prettier directo
+  "editor.formatOnSave": false,
+
+  // Activa ESLint para auto-fix
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Verifica que ESLint es el que valida JS
+  "eslint.validate": ["javascript", "javascriptreact", "typescript"]
+}

@@ -1,0 +1,13 @@
+# Logs
+logs
+*.log
+
+node_modules
+dist
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+.env
