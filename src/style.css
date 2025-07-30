@@ -12,8 +12,24 @@ html,body {
   margin: 0 !important;
   padding: 0;
   box-sizing: border-box;
-  overflow: clip;
+  overflow-x: clip;
+  /* overflow: clip; */
 }
+
+.webgl-container {
+  display: block;
+  position: relative;
+  width: 100vw;
+  aspect-ratio: 1 / 1;
+
+  .webgl {
+    position:absolute;
+    inset: 0;
+    outline: none;
+  }
+}
+
+
 
 /* #app {
   .webgl {
