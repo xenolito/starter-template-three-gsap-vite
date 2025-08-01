@@ -86,12 +86,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.domElement.style.touchAction = 'pan-y' // Prevents the browser from interpreting touch events as scroll events
 
 
-// Time
-// let time = Date.now();
-
-// Clock
-const clock = new THREE.Clock()
-
 // Animation setup
 // gsap.to(cube.position, {
 //   duration: 1,
@@ -104,10 +98,6 @@ const clock = new THREE.Clock()
 //     console.log('Animation complete')
 //   }
 // })
-
-
-
-
 
 
 // Update sizes
@@ -126,9 +116,6 @@ const updateWebGLSizes = (restoreFromFullscreen) => {
 
 // Resize event
 window.addEventListener('resize', updateWebGLSizes)
-
-
-
 
 // Fullscreen change event
 document.addEventListener('fullscreenchange', (ev) => {
@@ -155,7 +142,7 @@ document.addEventListener('fullscreenchange', (ev) => {
 
 })
 
-// Fullscreen event
+// Double click event for launching Fullscreen
 canvas.addEventListener('dblclick', () => {
   const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement  // For Safari compatibility
 
@@ -179,6 +166,14 @@ canvas.addEventListener('dblclick', () => {
     updateWebGLSizes()
   }
 })
+
+
+// Time
+// let time = Date.now();
+
+// Clock
+const clock = new THREE.Clock()
+
 
 // Animations
 const tick = () => {
