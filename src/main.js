@@ -6,7 +6,11 @@ import GUI from 'lil-gui'
 /**
  * Debug
  */
-const gui = new GUI({ width: 360 })
+const gui = new GUI({
+  width: 360,
+  closeFolders: true,
+  closed: true,
+})
 
 /* Cursor */
 
@@ -20,7 +24,9 @@ const gui = new GUI({ width: 360 })
 //   cursor.y = event.clientY / sizes.height - 0.5
 // })
 
-const canvasContainer = document.querySelector('.webgl-container')
+const canvasContainer = document.querySelector(
+  '.webgl-container'
+)
 const canvas = document.querySelector('canvas.webgl')
 
 const scene = new THREE.Scene()
@@ -48,6 +54,14 @@ const material = new THREE.MeshBasicMaterial({
 })
 const cube = new THREE.Mesh(geometry, material)
 group.add(cube)
+
+gui.add(cube.material, 'wireframe').name('Wireframe')
+gui
+  .add(cube.position, 'y')
+  .min(-3)
+  .max(3)
+  .step(0.01)
+  .name('Cube Y Position')
 
 const sizes = {
   width: canvasContainer.clientWidth,
@@ -121,7 +135,9 @@ const updateWebGLSizes = (restoreFromFullscreen) => {
 
   // Update renderer
   renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+  )
 }
 
 // Resize event
@@ -130,7 +146,8 @@ window.addEventListener('resize', updateWebGLSizes)
 // Fullscreen change event
 document.addEventListener('fullscreenchange', (ev) => {
   const fullscreenElement =
-    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
+    document.fullscreenElement ||
+    document.webkitFullscreenElement // For Safari compatibility
   canvas.fullscreen = !!fullscreenElement
 
   if (canvas.fullscreen) {
@@ -151,12 +168,16 @@ document.addEventListener('fullscreenchange', (ev) => {
 // Double click event for launching Fullscreen
 canvas.addEventListener('dblclick', () => {
   const fullscreenElement =
-    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
+    document.fullscreenElement ||
+    document.webkitFullscreenElement // For Safari compatibility
 
   if (!fullscreenElement) {
-    defaultSizes.width = document.querySelector('.webgl-container').clientWidth
-    defaultSizes.height =
-      document.querySelector('.webgl-container').clientHeight
+    defaultSizes.width = document.querySelector(
+      '.webgl-container'
+    ).clientWidth
+    defaultSizes.height = document.querySelector(
+      '.webgl-container'
+    ).clientHeight
 
     if (canvas.requestFullscreen) {
       canvas.requestFullscreen()
