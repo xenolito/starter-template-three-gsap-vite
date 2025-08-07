@@ -8,9 +8,8 @@ import GUI from 'lil-gui'
  */
 const gui = new GUI({
   width: 360,
-  closeFolders: true,
-  closed: true,
 })
+gui.close()
 
 /* Cursor */
 
