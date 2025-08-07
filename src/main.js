@@ -1,21 +1,24 @@
 import * as THREE from 'three'
-import {  OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import gsap from 'gsap'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import GUI from 'lil-gui'
+// import gsap from 'gsap'
 
-
+/**
+ * Debug
+ */
+const gui = new GUI({ width: 360 })
 
 /* Cursor */
 
-const cursor = {
-  x: 0,
-  y: 0
-}
+// const cursor = {
+//   x: 0,
+//   y: 0,
+// }
 
-window.addEventListener('mousemove', (event) => {
-  cursor.x = event.clientX / sizes.width - 0.5
-  cursor.y = event.clientY / sizes.height - 0.5
-
-})
+// window.addEventListener('mousemove', (event) => {
+//   cursor.x = event.clientX / sizes.width - 0.5
+//   cursor.y = event.clientY / sizes.height - 0.5
+// })
 
 const canvasContainer = document.querySelector('.webgl-container')
 const canvas = document.querySelector('canvas.webgl')
@@ -25,21 +28,35 @@ const scene = new THREE.Scene()
 const group = new THREE.Group()
 scene.add(group)
 
-const geometry = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10)
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+// // Manual custom geometry
+// const geometry = new THREE.BufferGeometry()
+
+// const facesCount = 5000
+
+// const positionsArray = new Float32Array(facesCount * 3 * 3) // 3 components per vertex (x, y, z)
+
+// for (let i = 0; i < facesCount * 3 * 3; i++) {
+//   positionsArray[i] = (Math.random() - 0.5) * 2 // Random value between -1 and 1
+// }
+
+// geometry.setAttribute('position', new THREE.BufferAttribute(positionsArray, 3))
+
+const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1)
+const material = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  // wireframe: true,
+})
 const cube = new THREE.Mesh(geometry, material)
 group.add(cube)
 
 const sizes = {
-  // width: window.innerWidth,
-  // height: window.innerWidth // Make it square,
   width: canvasContainer.clientWidth,
   height: canvasContainer.clientHeight,
 }
 
 const defaultSizes = {
   width: canvasContainer.clientWidth,
-  height: canvasContainer.clientHeight
+  height: canvasContainer.clientHeight,
 }
 
 // Camera setup
@@ -54,25 +71,20 @@ camera.lookAt(cube.position)
 
 scene.add(camera)
 
-
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.dampingFactor = 0.05
 controls.enableZoom = false
-// controls.enabled = false
-
 controls.touches = {
   ONE: THREE.TOUCH.ROTATE, // arrastre horizontal → rota
   TWO: THREE.TOUCH.DOLLY_PAN, // dos dedos → zoom/pan
 }
-
-
 // controls.screenSpacePanning = false
 // controls.maxPolarAngle = Math.PI / 2
 // controls.target.y = 0.5
+// controls.enabled = false
 controls.update()
-
 
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -84,7 +96,6 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 // renderer.domElement.parentElement.style.touchAction = 'pan-y' // Prevents the browser from interpreting touch events as scroll events
 renderer.domElement.style.touchAction = 'pan-y' // Prevents the browser from interpreting touch events as scroll events
-
 
 // Animation setup
 // gsap.to(cube.position, {
@@ -98,7 +109,6 @@ renderer.domElement.style.touchAction = 'pan-y' // Prevents the browser from int
 //     console.log('Animation complete')
 //   }
 // })
-
 
 // Update sizes
 const updateWebGLSizes = (restoreFromFullscreen) => {
@@ -119,10 +129,9 @@ window.addEventListener('resize', updateWebGLSizes)
 
 // Fullscreen change event
 document.addEventListener('fullscreenchange', (ev) => {
-
-  const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
+  const fullscreenElement =
+    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
   canvas.fullscreen = !!fullscreenElement
-
 
   if (canvas.fullscreen) {
     canvasContainer.style.aspectRatio = 'unset'
@@ -130,50 +139,48 @@ document.addEventListener('fullscreenchange', (ev) => {
     canvasContainer.style.height = '100vh' // Set to full height
     defaultSizes.width = canvasContainer.clientWidth
     defaultSizes.height = canvasContainer.clientHeight
-  }
-  else {
+  } else {
     canvasContainer.style.width = '100vw' // Set to full width
     canvasContainer.style.height = 'auto' // Set to full width
     canvasContainer.style.aspectRatio = '1 / 1'
   }
 
   updateWebGLSizes()
-
-
 })
 
 // Double click event for launching Fullscreen
 canvas.addEventListener('dblclick', () => {
-  const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement  // For Safari compatibility
+  const fullscreenElement =
+    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
 
   if (!fullscreenElement) {
     defaultSizes.width = document.querySelector('.webgl-container').clientWidth
-    defaultSizes.height = document.querySelector('.webgl-container').clientHeight
+    defaultSizes.height =
+      document.querySelector('.webgl-container').clientHeight
 
     if (canvas.requestFullscreen) {
       canvas.requestFullscreen()
-    } else if (canvas.webkitRequestFullscreen) { // For Safari compatibility
+    } else if (canvas.webkitRequestFullscreen) {
+      // For Safari compatibility
       canvas.webkitRequestFullscreen()
     }
     updateWebGLSizes() // Update sizes for fullscreen
-
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen()
-    } else if (document.webkitExitFullscreen) { // For Safari compatibility
+    } else if (document.webkitExitFullscreen) {
+      // For Safari compatibility
       document.webkitExitFullscreen()
     }
     updateWebGLSizes()
   }
 })
 
-
 // Time
 // let time = Date.now();
 
 // Clock
 const clock = new THREE.Clock()
-
 
 // Animations
 const tick = () => {
@@ -186,7 +193,6 @@ const tick = () => {
 
   // cube.position.y = Math.sin(elapsedTime * 1.5) // oscillate up and down
   // cube.position.x = Math.cos(elapsedTime * 1.5) // oscillate up and down
-
 
   // CAMERA UPDATE WITH MOUSE MOVEMENT MANUALLY
   // camera.position.x = Math.sin(cursor.x * Math.PI*1.5) * 4
@@ -203,4 +209,3 @@ const tick = () => {
 }
 
 tick()
-
