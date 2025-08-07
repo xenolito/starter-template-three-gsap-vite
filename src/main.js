@@ -8,8 +8,16 @@ import GUI from 'lil-gui'
  */
 const gui = new GUI({
   width: 360,
+  title: 'Debug UI',
+  closeFolders: true,
 })
-gui.close()
+gui.hide()
+// Debug show/hide pressing CTRL + 'm' key
+window.addEventListener('keydown', (ev) => {
+  if (ev.key === 'm' && ev.ctrlKey) {
+    gui.show(gui._hidden)
+  }
+})
 
 /* Cursor */
 
