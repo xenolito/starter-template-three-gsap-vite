@@ -19,6 +19,55 @@ window.addEventListener('keydown', (ev) => {
   }
 })
 
+/**
+ * Textures
+ */
+
+const loadingManager = new THREE.LoadingManager()
+// loadingManager.onStart = () => {
+//   console.log('Loading started')
+// }
+// loadingManager.onLoad = () => {
+//   console.log('Loading complete')
+// }
+// loadingManager.onProgress = (
+//   url,
+//   itemsLoaded,
+//   itemsTotal
+// ) => {
+//   console.log(
+//     `Loading progress: ${itemsLoaded} / ${itemsTotal}`
+//   )
+// }
+// loadingManager.onError = (url) => {
+//   console.log(`Loading error: ${url}`)
+// }
+
+const textureLoader = new THREE.TextureLoader(loadingManager)
+// const colorTexture = textureLoader.load('/textures/door/color.jpg')
+// const colorTexture = textureLoader.load('/textures/checkerboard-1024x1024.png')
+// const colorTexture = textureLoader.load('/textures/checkerboard-8x8.png')
+const colorTexture = textureLoader.load('/textures/minecraft.webp')
+colorTexture.colorSpace = THREE.SRGBColorSpace // Ensure the texture is in sRGB color space
+
+const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+alphaTexture.alpha = true // Ensure the texture is treated as an alpha texture
+
+const heightTexture = textureLoader.load('/textures/door/height.jpg')
+
+const normalTexture = textureLoader.load('/textures/door/normal.jpg')
+// normalTexture.normalScale.set(0.5, 0.5)
+
+const ambientOcclusionTexture = textureLoader.load(
+  '/textures/door/ambientOcclusion.jpg'
+)
+const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+
+colorTexture.generateMipmaps = false
+// colorTexture.minFilter = THREE.NearestFilter
+colorTexture.magFilter = THREE.NearestFilter
+
 /* Cursor */
 
 // const cursor = {
@@ -31,9 +80,7 @@ window.addEventListener('keydown', (ev) => {
 //   cursor.y = event.clientY / sizes.height - 0.5
 // })
 
-const canvasContainer = document.querySelector(
-  '.webgl-container'
-)
+const canvasContainer = document.querySelector('.webgl-container')
 const canvas = document.querySelector('canvas.webgl')
 
 const scene = new THREE.Scene()
@@ -41,7 +88,7 @@ const scene = new THREE.Scene()
 const group = new THREE.Group()
 scene.add(group)
 
-// // Manual custom geometry
+//  Manual custom geometry
 // const geometry = new THREE.BufferGeometry()
 
 // const facesCount = 5000
@@ -55,20 +102,21 @@ scene.add(group)
 // geometry.setAttribute('position', new THREE.BufferAttribute(positionsArray, 3))
 
 const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1)
+// console.log(geometry.attributes)
 const material = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
+  // color: 0xff0000,
+  map: colorTexture,
   // wireframe: true,
 })
 const cube = new THREE.Mesh(geometry, material)
 group.add(cube)
 
 gui.add(cube.material, 'wireframe').name('Wireframe')
-gui
-  .add(cube.position, 'y')
-  .min(-3)
-  .max(3)
-  .step(0.01)
-  .name('Cube Y Position')
+gui.add(cube.position, 'y').min(-3).max(3).step(0.01).name('Cube Y Position')
+
+/**
+ * SIZES
+ */
 
 const sizes = {
   width: canvasContainer.clientWidth,
@@ -96,7 +144,7 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.dampingFactor = 0.05
-controls.enableZoom = false
+// controls.enableZoom = false
 controls.touches = {
   ONE: THREE.TOUCH.ROTATE, // arrastre horizontal → rota
   TWO: THREE.TOUCH.DOLLY_PAN, // dos dedos → zoom/pan
@@ -142,9 +190,7 @@ const updateWebGLSizes = (restoreFromFullscreen) => {
 
   // Update renderer
   renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
-  )
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 }
 
 // Resize event
@@ -153,8 +199,7 @@ window.addEventListener('resize', updateWebGLSizes)
 // Fullscreen change event
 document.addEventListener('fullscreenchange', (ev) => {
   const fullscreenElement =
-    document.fullscreenElement ||
-    document.webkitFullscreenElement // For Safari compatibility
+    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
   canvas.fullscreen = !!fullscreenElement
 
   if (canvas.fullscreen) {
@@ -175,16 +220,12 @@ document.addEventListener('fullscreenchange', (ev) => {
 // Double click event for launching Fullscreen
 canvas.addEventListener('dblclick', () => {
   const fullscreenElement =
-    document.fullscreenElement ||
-    document.webkitFullscreenElement // For Safari compatibility
+    document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
 
   if (!fullscreenElement) {
-    defaultSizes.width = document.querySelector(
-      '.webgl-container'
-    ).clientWidth
-    defaultSizes.height = document.querySelector(
-      '.webgl-container'
-    ).clientHeight
+    defaultSizes.width = document.querySelector('.webgl-container').clientWidth
+    defaultSizes.height =
+      document.querySelector('.webgl-container').clientHeight
 
     if (canvas.requestFullscreen) {
       canvas.requestFullscreen()
