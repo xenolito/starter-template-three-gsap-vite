@@ -1,15 +1,17 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { RGBELoader } from 'three/examples/jsm/Addons.js'
 import GUI from 'lil-gui'
 // import gsap from 'gsap'
 
 /**
- * Debug
+ * !Debug
  */
 const gui = new GUI({
   width: 360,
   title: 'Debug UI',
-  closeFolders: true,
+  container: document.querySelector('.webgl-container'),
+  // closeFolders: true,
 })
 gui.hide()
 // Debug show/hide pressing CTRL + 'm' key
@@ -20,102 +22,208 @@ window.addEventListener('keydown', (ev) => {
 })
 
 /**
- * Textures
+ * !Textures
  */
 
 const loadingManager = new THREE.LoadingManager()
-// loadingManager.onStart = () => {
-//   console.log('Loading started')
-// }
-// loadingManager.onLoad = () => {
-//   console.log('Loading complete')
-// }
-// loadingManager.onProgress = (
-//   url,
-//   itemsLoaded,
-//   itemsTotal
-// ) => {
-//   console.log(
-//     `Loading progress: ${itemsLoaded} / ${itemsTotal}`
-//   )
-// }
-// loadingManager.onError = (url) => {
-//   console.log(`Loading error: ${url}`)
-// }
+loadingManager.onError = (url) => {
+  console.error(`Error loading texture: ${url}`)
+}
 
 const textureLoader = new THREE.TextureLoader(loadingManager)
-// const colorTexture = textureLoader.load('/textures/door/color.jpg')
-// const colorTexture = textureLoader.load('/textures/checkerboard-1024x1024.png')
-// const colorTexture = textureLoader.load('/textures/checkerboard-8x8.png')
-const colorTexture = textureLoader.load('/textures/minecraft.webp')
-colorTexture.colorSpace = THREE.SRGBColorSpace // Ensure the texture is in sRGB color space
 
-const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-alphaTexture.alpha = true // Ensure the texture is treated as an alpha texture
-
-const heightTexture = textureLoader.load('/textures/door/height.jpg')
-
-const normalTexture = textureLoader.load('/textures/door/normal.jpg')
-// normalTexture.normalScale.set(0.5, 0.5)
-
-const ambientOcclusionTexture = textureLoader.load(
+const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load(
   '/textures/door/ambientOcclusion.jpg'
 )
-const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 
-colorTexture.generateMipmaps = false
-// colorTexture.minFilter = THREE.NearestFilter
-colorTexture.magFilter = THREE.NearestFilter
+const matcapTexture = textureLoader.load('/textures/matcaps/3.png')
+const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
 
-/* Cursor */
-
-// const cursor = {
-//   x: 0,
-//   y: 0,
-// }
-
-// window.addEventListener('mousemove', (event) => {
-//   cursor.x = event.clientX / sizes.width - 0.5
-//   cursor.y = event.clientY / sizes.height - 0.5
-// })
+matcapTexture.colorSpace = THREE.SRGBColorSpace
+doorColorTexture.colorSpace = THREE.SRGBColorSpace // Ensure the texture is in sRGB color space
 
 const canvasContainer = document.querySelector('.webgl-container')
 const canvas = document.querySelector('canvas.webgl')
 
 const scene = new THREE.Scene()
 
-const group = new THREE.Group()
-scene.add(group)
+const material_a = new THREE.MeshPhysicalMaterial()
 
-//  Manual custom geometry
-// const geometry = new THREE.BufferGeometry()
+const materialFolder = gui.addFolder('Material Properties')
 
-// const facesCount = 5000
+//! MeshBasicMaterial
+// material_a.map = doorColorTexture
+// material_a.color = new THREE.Color(0xff0000)
+// material_a.opacity = 0.5
+// material_a.transparent = true
+// material_a.alphaMap = doorAlphaTexture
+// material_a.wireframe = true
 
-// const positionsArray = new Float32Array(facesCount * 3 * 3) // 3 components per vertex (x, y, z)
+//! MeshNormalMaterial
+// material_a.flatShading = true
 
-// for (let i = 0; i < facesCount * 3 * 3; i++) {
-//   positionsArray[i] = (Math.random() - 0.5) * 2 // Random value between -1 and 1
-// }
+//! MeshMatcapMaterial
+// material_a.matcap = matcapTexture
 
-// geometry.setAttribute('position', new THREE.BufferAttribute(positionsArray, 3))
+//! MeshLambertMaterial
 
-const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1)
-// console.log(geometry.attributes)
-const material = new THREE.MeshBasicMaterial({
-  // color: 0xff0000,
-  map: colorTexture,
-  // wireframe: true,
-})
-const cube = new THREE.Mesh(geometry, material)
-group.add(cube)
+//! MeshPhongMaterial
+// material_a.shininess = 100
+// material_a.specular = new THREE.Color(0x1188ff)
 
-gui.add(cube.material, 'wireframe').name('Wireframe')
-gui.add(cube.position, 'y').min(-3).max(3).step(0.01).name('Cube Y Position')
+//! MeshToonMaterial (like cellshading on videogames)
+// material_a.gradientMap = gradientTexture
+// gradientTexture.minFilter = THREE.NearestFilter
+// gradientTexture.magFilter = THREE.NearestFilter
+// gradientTexture.generateMipmaps = false
+
+//! MeshStandardMaterial (PBR)
+// material_a.metalness = 1
+// material_a.roughness = 1
+
+// material_a.map = doorColorTexture
+// material_a.aoMap = doorAmbientOcclusionTexture
+// material_a.aoMapIntensity = 1
+// material_a.displacementMap = doorHeightTexture
+// material_a.displacementScale = 0.1
+// material_a.metalnessMap = doorMetalnessTexture
+// material_a.roughnessMap = doorRoughnessTexture
+// material_a.normalMap = doorNormalTexture
+// material_a.normalScale.set(0.5, 0.5)
+// material_a.transparent = true
+// material_a.alphaMap = doorAlphaTexture
+
+//! MeshPhysicalMaterial (extends MeshStandardMaterial)
+material_a.metalness = 0
+material_a.roughness = 0
+
+// material_a.map = doorColorTexture
+// material_a.aoMap = doorAmbientOcclusionTexture
+// material_a.aoMapIntensity = 1
+// material_a.displacementMap = doorHeightTexture
+// material_a.displacementScale = 0.1
+// material_a.metalnessMap = doorMetalnessTexture
+// material_a.roughnessMap = doorRoughnessTexture
+// material_a.normalMap = doorNormalTexture
+// material_a.normalScale.set(0.5, 0.5)
+// material_a.transparent = true
+// material_a.alphaMap = doorAlphaTexture
+
+// Clearcoat
+// material_a.clearcoat = 1
+// material_a.clearcoatRoughness = 0
+// materialFolder
+//   .add(material_a, 'clearcoat')
+//   .min(0)
+//   .max(1)
+//   .step(0.01)
+//   .name('Clearcoat')
+// materialFolder
+//   .add(material_a, 'clearcoatRoughness')
+//   .min(0)
+//   .max(1)
+//   .step(0.01)
+//   .name('Clearcoat Roughness')
+
+// Sheen (fluffy)
+// material_a.sheen = 1
+// material_a.sheenColor = new THREE.Color(0xffffff)
+// material_a.sheenRoughness = 0.5
+// materialFolder.add(material_a, 'sheen').min(0).max(1).step(0.01).name('Sheen')
+// materialFolder
+//   .add(material_a, 'sheenRoughness')
+//   .min(0)
+//   .max(1)
+//   .step(0.01)
+//   .name('Sheen Roughness')
+
+// Iridescence (like soap bubbles)
+// material_a.iridescence = 1
+// material_a.iridescenceThickness = 0.1
+// material_a.iridescenceIOR = 1.5 // Index of Refraction
+// materialFolder
+//   .add(material_a, 'iridescenceIOR')
+//   .min(1)
+//   .max(2.333)
+//   .step(0.01)
+//   .name('Iridescence IOR')
+// materialFolder
+//   .add(material_a, 'iridescenceThickness')
+//   .min(0)
+//   .max(1)
+//   .step(0.01)
+//   .name('Iridescence Thickness')
+
+// materialFolder
+//   .add(material_a, 'iridescence')
+//   .min(0)
+//   .max(1)
+//   .step(0.01)
+//   .name('Iridescence')
+
+// Transmission (like glass)
+material_a.transmission = 1
+material_a.ior = 1.5 // Index of Refraction
+material_a.thickness = 0.5 // Thickness of the material
+
+materialFolder
+  .add(material_a, 'transmission')
+  .min(0)
+  .max(1)
+  .step(0.01)
+  .name('Transmission')
+
+materialFolder.add(material_a, 'ior').min(1).max(2.333).step(0.01).name('IOR')
+
+materialFolder
+  .add(material_a, 'thickness')
+  .min(0)
+  .max(1)
+  .step(0.01)
+  .name('Thickness')
+
+materialFolder
+  .add(material_a, 'roughness')
+  .min(0)
+  .max(1)
+  .step(0.01)
+  .name('Roughness')
+
+materialFolder
+  .add(material_a, 'aoMapIntensity')
+  .min(0)
+  .max(10)
+  .step(0.01)
+  .name('AO Map Intensity')
+
+materialFolder
+  .add(material_a, 'displacementScale')
+  .min(0)
+  .max(1)
+  .step(0.01)
+  .name('Displacement Scale')
+
+const sphereGeometry = new THREE.SphereGeometry(1, 64, 64)
+const sphere = new THREE.Mesh(sphereGeometry, material_a)
+sphere.position.set(-3, 0, 0)
+
+const planeGeometry = new THREE.PlaneGeometry(3, 3, 100, 100)
+const plane = new THREE.Mesh(planeGeometry, material_a)
+
+const torusGeometry = new THREE.TorusGeometry(1, 0.75, 64, 128)
+const torus = new THREE.Mesh(torusGeometry, material_a)
+torus.position.set(3, 0, 0)
+
+scene.add(sphere, plane, torus)
 
 /**
- * SIZES
+ *! SIZES
  */
 
 const sizes = {
@@ -128,6 +236,14 @@ const defaultSizes = {
   height: canvasContainer.clientHeight,
 }
 
+//! Lights
+// const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+// scene.add(ambientLight)
+
+// const pointLight = new THREE.PointLight(0xffffff, 60)
+// pointLight.position.set(5, 5, 5)
+// scene.add(pointLight)
+
 // Camera setup
 const camera = new THREE.PerspectiveCamera(
   50,
@@ -135,12 +251,37 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 )
-camera.position.set(1, 1, 3)
-camera.lookAt(cube.position)
+camera.position.set(1, 1, 10)
+camera.lookAt(plane.position)
 
 scene.add(camera)
 
-// Controls
+/**
+ *! Enviroment map
+ */
+const rgbeLoader = new RGBELoader(loadingManager)
+rgbeLoader.load('./textures/environmentMap/2k.hdr', (em) => {
+  em.mapping = THREE.EquirectangularReflectionMapping
+  scene.environment = em
+  scene.background = em
+
+  // Add the env map to the material
+  material_a.envMap = em
+
+  // Update the material to reflect the environment map
+  material_a.needsUpdate = true
+
+  // Add a GUI control for the environment map intensity
+  const envMapFolder = gui.addFolder('Environment Map')
+  envMapFolder
+    .add(material_a, 'envMapIntensity')
+    .min(0)
+    .max(10)
+    .step(0.01)
+    .name('Env Map Intensity')
+})
+
+//! Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.dampingFactor = 0.05
@@ -149,10 +290,6 @@ controls.touches = {
   ONE: THREE.TOUCH.ROTATE, // arrastre horizontal → rota
   TWO: THREE.TOUCH.DOLLY_PAN, // dos dedos → zoom/pan
 }
-// controls.screenSpacePanning = false
-// controls.maxPolarAngle = Math.PI / 2
-// controls.target.y = 0.5
-// controls.enabled = false
 controls.update()
 
 const renderer = new THREE.WebGLRenderer({
@@ -163,24 +300,10 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-// renderer.domElement.parentElement.style.touchAction = 'pan-y' // Prevents the browser from interpreting touch events as scroll events
 renderer.domElement.style.touchAction = 'pan-y' // Prevents the browser from interpreting touch events as scroll events
 
-// Animation setup
-// gsap.to(cube.position, {
-//   duration: 1,
-//   delay: 1,
-//   x: 2,
-//   ease: 'power1.inOut',
-//   yoyo: true,
-//   repeat: -1,
-//   onComplete: () => {
-//     console.log('Animation complete')
-//   }
-// })
-
 // Update sizes
-const updateWebGLSizes = (restoreFromFullscreen) => {
+const updateWebGLSizes = () => {
   sizes.width = canvasContainer.clientWidth
   sizes.height = canvasContainer.clientHeight
 
@@ -197,7 +320,7 @@ const updateWebGLSizes = (restoreFromFullscreen) => {
 window.addEventListener('resize', updateWebGLSizes)
 
 // Fullscreen change event
-document.addEventListener('fullscreenchange', (ev) => {
+document.addEventListener('fullscreenchange', () => {
   const fullscreenElement =
     document.fullscreenElement || document.webkitFullscreenElement // For Safari compatibility
   canvas.fullscreen = !!fullscreenElement
@@ -227,11 +350,13 @@ canvas.addEventListener('dblclick', () => {
     defaultSizes.height =
       document.querySelector('.webgl-container').clientHeight
 
-    if (canvas.requestFullscreen) {
-      canvas.requestFullscreen()
+    if (canvasContainer.requestFullscreen) {
+      // canvas.requestFullscreen()
+      canvasContainer.requestFullscreen()
     } else if (canvas.webkitRequestFullscreen) {
       // For Safari compatibility
-      canvas.webkitRequestFullscreen()
+      // canvas.webkitRequestFullscreen()
+      canvasContainer.webkitRequestFullscreen()
     }
     updateWebGLSizes() // Update sizes for fullscreen
   } else {
@@ -267,7 +392,15 @@ const tick = () => {
   // camera.position.x = Math.sin(cursor.x * Math.PI*1.5) * 4
   // camera.position.z = Math.cos(cursor.x * Math.PI * 1.5) * 4
   // camera.position.y = cursor.y * 5 * -1
-  // camera.lookAt(cube.position)
+  camera.lookAt(plane.position)
+
+  sphere.rotation.y = Math.PI * elapsedTime * 0.05
+  plane.rotation.y = Math.PI * elapsedTime * 0.05
+  torus.rotation.y = Math.PI * elapsedTime * 0.05
+
+  sphere.rotation.x = -Math.PI * elapsedTime * 0.09
+  plane.rotation.x = -Math.PI * elapsedTime * 0.09
+  torus.rotation.x = -Math.PI * elapsedTime * 0.09
 
   controls.update()
 

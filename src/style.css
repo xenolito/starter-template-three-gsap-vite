@@ -29,7 +29,9 @@ html,body {
   }
 }
 
-
+.lil-gui {
+  position: relative;
+}
 
 /* #app {
   .webgl {
