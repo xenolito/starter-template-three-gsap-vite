@@ -25,202 +25,35 @@ window.addEventListener('keydown', (ev) => {
  * !Textures
  */
 
-const loadingManager = new THREE.LoadingManager()
-loadingManager.onError = (url) => {
-  console.error(`Error loading texture: ${url}`)
-}
-
-const textureLoader = new THREE.TextureLoader(loadingManager)
-
-const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
-const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-const doorAmbientOcclusionTexture = textureLoader.load(
-  '/textures/door/ambientOcclusion.jpg'
-)
-const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
-const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
-const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
-
-const matcapTexture = textureLoader.load('/textures/matcaps/3.png')
-const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
-
-matcapTexture.colorSpace = THREE.SRGBColorSpace
-doorColorTexture.colorSpace = THREE.SRGBColorSpace // Ensure the texture is in sRGB color space
-
+//! DOM
 const canvasContainer = document.querySelector('.webgl-container')
 const canvas = document.querySelector('canvas.webgl')
 
 const scene = new THREE.Scene()
 
-const material_a = new THREE.MeshPhysicalMaterial()
+//! MATERIALS
+// const material = new THREE.MeshStandardMaterial()
+const material = new THREE.MeshStandardMaterial()
 
-const materialFolder = gui.addFolder('Material Properties')
+//! OBJECTS
+const planeGeometry = new THREE.PlaneGeometry(6, 6)
+const plane = new THREE.Mesh(planeGeometry, material)
+plane.position.set(0, 0, 0)
+plane.rotation.x = -Math.PI * 0.5
 
-//! MeshBasicMaterial
-// material_a.map = doorColorTexture
-// material_a.color = new THREE.Color(0xff0000)
-// material_a.opacity = 0.5
-// material_a.transparent = true
-// material_a.alphaMap = doorAlphaTexture
-// material_a.wireframe = true
+const sphereGeometry = new THREE.SphereGeometry(0.75, 32, 32)
+const sphere = new THREE.Mesh(sphereGeometry, material)
+sphere.position.set(-2, 0.75, 0)
 
-//! MeshNormalMaterial
-// material_a.flatShading = true
+const torusGeometry = new THREE.TorusGeometry(0.5, 0.3, 64, 128)
+const torus = new THREE.Mesh(torusGeometry, material)
+torus.position.set(2, 0.8, 0)
 
-//! MeshMatcapMaterial
-// material_a.matcap = matcapTexture
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+const cube = new THREE.Mesh(cubeGeometry, material)
+cube.position.set(0, 0.9, 0)
 
-//! MeshLambertMaterial
-
-//! MeshPhongMaterial
-// material_a.shininess = 100
-// material_a.specular = new THREE.Color(0x1188ff)
-
-//! MeshToonMaterial (like cellshading on videogames)
-// material_a.gradientMap = gradientTexture
-// gradientTexture.minFilter = THREE.NearestFilter
-// gradientTexture.magFilter = THREE.NearestFilter
-// gradientTexture.generateMipmaps = false
-
-//! MeshStandardMaterial (PBR)
-// material_a.metalness = 1
-// material_a.roughness = 1
-
-// material_a.map = doorColorTexture
-// material_a.aoMap = doorAmbientOcclusionTexture
-// material_a.aoMapIntensity = 1
-// material_a.displacementMap = doorHeightTexture
-// material_a.displacementScale = 0.1
-// material_a.metalnessMap = doorMetalnessTexture
-// material_a.roughnessMap = doorRoughnessTexture
-// material_a.normalMap = doorNormalTexture
-// material_a.normalScale.set(0.5, 0.5)
-// material_a.transparent = true
-// material_a.alphaMap = doorAlphaTexture
-
-//! MeshPhysicalMaterial (extends MeshStandardMaterial)
-material_a.metalness = 0
-material_a.roughness = 0
-
-// material_a.map = doorColorTexture
-// material_a.aoMap = doorAmbientOcclusionTexture
-// material_a.aoMapIntensity = 1
-// material_a.displacementMap = doorHeightTexture
-// material_a.displacementScale = 0.1
-// material_a.metalnessMap = doorMetalnessTexture
-// material_a.roughnessMap = doorRoughnessTexture
-// material_a.normalMap = doorNormalTexture
-// material_a.normalScale.set(0.5, 0.5)
-// material_a.transparent = true
-// material_a.alphaMap = doorAlphaTexture
-
-// Clearcoat
-// material_a.clearcoat = 1
-// material_a.clearcoatRoughness = 0
-// materialFolder
-//   .add(material_a, 'clearcoat')
-//   .min(0)
-//   .max(1)
-//   .step(0.01)
-//   .name('Clearcoat')
-// materialFolder
-//   .add(material_a, 'clearcoatRoughness')
-//   .min(0)
-//   .max(1)
-//   .step(0.01)
-//   .name('Clearcoat Roughness')
-
-// Sheen (fluffy)
-// material_a.sheen = 1
-// material_a.sheenColor = new THREE.Color(0xffffff)
-// material_a.sheenRoughness = 0.5
-// materialFolder.add(material_a, 'sheen').min(0).max(1).step(0.01).name('Sheen')
-// materialFolder
-//   .add(material_a, 'sheenRoughness')
-//   .min(0)
-//   .max(1)
-//   .step(0.01)
-//   .name('Sheen Roughness')
-
-// Iridescence (like soap bubbles)
-// material_a.iridescence = 1
-// material_a.iridescenceThickness = 0.1
-// material_a.iridescenceIOR = 1.5 // Index of Refraction
-// materialFolder
-//   .add(material_a, 'iridescenceIOR')
-//   .min(1)
-//   .max(2.333)
-//   .step(0.01)
-//   .name('Iridescence IOR')
-// materialFolder
-//   .add(material_a, 'iridescenceThickness')
-//   .min(0)
-//   .max(1)
-//   .step(0.01)
-//   .name('Iridescence Thickness')
-
-// materialFolder
-//   .add(material_a, 'iridescence')
-//   .min(0)
-//   .max(1)
-//   .step(0.01)
-//   .name('Iridescence')
-
-// Transmission (like glass)
-material_a.transmission = 1
-material_a.ior = 1.5 // Index of Refraction
-material_a.thickness = 0.5 // Thickness of the material
-
-materialFolder
-  .add(material_a, 'transmission')
-  .min(0)
-  .max(1)
-  .step(0.01)
-  .name('Transmission')
-
-materialFolder.add(material_a, 'ior').min(1).max(2.333).step(0.01).name('IOR')
-
-materialFolder
-  .add(material_a, 'thickness')
-  .min(0)
-  .max(1)
-  .step(0.01)
-  .name('Thickness')
-
-materialFolder
-  .add(material_a, 'roughness')
-  .min(0)
-  .max(1)
-  .step(0.01)
-  .name('Roughness')
-
-materialFolder
-  .add(material_a, 'aoMapIntensity')
-  .min(0)
-  .max(10)
-  .step(0.01)
-  .name('AO Map Intensity')
-
-materialFolder
-  .add(material_a, 'displacementScale')
-  .min(0)
-  .max(1)
-  .step(0.01)
-  .name('Displacement Scale')
-
-const sphereGeometry = new THREE.SphereGeometry(1, 64, 64)
-const sphere = new THREE.Mesh(sphereGeometry, material_a)
-sphere.position.set(-3, 0, 0)
-
-const planeGeometry = new THREE.PlaneGeometry(3, 3, 100, 100)
-const plane = new THREE.Mesh(planeGeometry, material_a)
-
-const torusGeometry = new THREE.TorusGeometry(1, 0.75, 64, 128)
-const torus = new THREE.Mesh(torusGeometry, material_a)
-torus.position.set(3, 0, 0)
-
-scene.add(sphere, plane, torus)
+scene.add(sphere, plane, torus, cube)
 
 /**
  *! SIZES
@@ -237,12 +70,12 @@ const defaultSizes = {
 }
 
 //! Lights
-// const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-// scene.add(ambientLight)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+scene.add(ambientLight)
 
-// const pointLight = new THREE.PointLight(0xffffff, 60)
-// pointLight.position.set(5, 5, 5)
-// scene.add(pointLight)
+const pointLight = new THREE.PointLight(0xffffff, 60)
+pointLight.position.set(5, 5, 5)
+scene.add(pointLight)
 
 // Camera setup
 const camera = new THREE.PerspectiveCamera(
@@ -255,31 +88,6 @@ camera.position.set(1, 1, 10)
 camera.lookAt(plane.position)
 
 scene.add(camera)
-
-/**
- *! Enviroment map
- */
-const rgbeLoader = new RGBELoader(loadingManager)
-rgbeLoader.load('./textures/environmentMap/2k.hdr', (em) => {
-  em.mapping = THREE.EquirectangularReflectionMapping
-  scene.environment = em
-  scene.background = em
-
-  // Add the env map to the material
-  material_a.envMap = em
-
-  // Update the material to reflect the environment map
-  material_a.needsUpdate = true
-
-  // Add a GUI control for the environment map intensity
-  const envMapFolder = gui.addFolder('Environment Map')
-  envMapFolder
-    .add(material_a, 'envMapIntensity')
-    .min(0)
-    .max(10)
-    .step(0.01)
-    .name('Env Map Intensity')
-})
 
 //! Controls
 const controls = new OrbitControls(camera, canvas)
@@ -395,12 +203,12 @@ const tick = () => {
   camera.lookAt(plane.position)
 
   sphere.rotation.y = Math.PI * elapsedTime * 0.05
-  plane.rotation.y = Math.PI * elapsedTime * 0.05
   torus.rotation.y = Math.PI * elapsedTime * 0.05
+  cube.rotation.y = Math.PI * elapsedTime * 0.05
 
   sphere.rotation.x = -Math.PI * elapsedTime * 0.09
-  plane.rotation.x = -Math.PI * elapsedTime * 0.09
   torus.rotation.x = -Math.PI * elapsedTime * 0.09
+  cube.rotation.x = -Math.PI * elapsedTime * 0.09
 
   controls.update()
 
