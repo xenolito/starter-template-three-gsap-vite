@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { RGBELoader } from 'three/examples/jsm/Addons.js'
+// import { RGBELoader } from 'three/examples/jsm/Addons.js'
 import GUI from 'lil-gui'
 // import gsap from 'gsap'
 
@@ -34,6 +34,7 @@ const scene = new THREE.Scene()
 //! MATERIALS
 // const material = new THREE.MeshStandardMaterial()
 const material = new THREE.MeshStandardMaterial()
+material.roughness = 0.35
 
 //! OBJECTS
 const planeGeometry = new THREE.PlaneGeometry(6, 6)
@@ -73,11 +74,38 @@ const defaultSizes = {
 const ambientLight = new THREE.AmbientLight(0xffffff, 1)
 scene.add(ambientLight)
 
-const pointLight = new THREE.PointLight(0xffffff, 60)
-pointLight.position.set(5, 5, 5)
-scene.add(pointLight)
+gui
+  .add(ambientLight, 'intensity')
+  .min(0)
+  .max(5)
+  .step(0.01)
+  .name('Ambient Light Intensity')
 
-// Camera setup
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 1)
+directionalLight.position.set(2, 3, 4)
+scene.add(directionalLight)
+gui
+  .add(directionalLight, 'intensity')
+  .min(0)
+  .max(5)
+  .step(0.01)
+  .name('Directional Light Intensity')
+
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 1)
+scene.add(hemisphereLight)
+
+const pointLight = new THREE.PointLight(0xff9000, 1, 10, 2)
+pointLight.position.set(-1, 1, 1)
+
+scene.add(pointLight)
+gui
+  .add(pointLight, 'intensity')
+  .min(0)
+  .max(5)
+  .step(0.01)
+  .name('Point Light Intensity')
+
+//! Camera setup
 const camera = new THREE.PerspectiveCamera(
   50,
   sizes.width / sizes.height,
@@ -93,7 +121,7 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.dampingFactor = 0.05
-// controls.enableZoom = false
+controls.enableZoom = false
 controls.touches = {
   ONE: THREE.TOUCH.ROTATE, // arrastre horizontal → rota
   TWO: THREE.TOUCH.DOLLY_PAN, // dos dedos → zoom/pan
